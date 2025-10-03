@@ -21,7 +21,7 @@ function preload()
 
 function setup() 
 {
-    createCanvas(displayWidth, displayHeight);
+    createCanvas(windowWidth, windowHeight);
     // createCanvas(sillyCatGif, 0, 0, height, width);
     backgroundColor = color(200, 220, 255);
     
