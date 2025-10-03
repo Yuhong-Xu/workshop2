@@ -21,7 +21,8 @@ function preload()
 
 function setup() 
 {
-    createCanvas(windowWidth, windowHeight);
+    createCanvas(displayWidth, displayHeight);
+    // createCanvas(sillyCatGif, 0, 0, height, width);
     backgroundColor = color(200, 220, 255);
     
     // Lock mobile gestures to prevent browser interference
