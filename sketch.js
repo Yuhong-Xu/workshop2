@@ -68,7 +68,7 @@ function draw()
         // Display GIF rotated 90 degrees for portrait mode, filling the canvas
         push();
         translate(width/2, height/2);
-        rotate(HALF_PI); // Rotate 90 degrees
+        //rotate(HALF_PI); // Rotate 90 degrees
         imageMode(CENTER);
         // After rotation, width becomes height and height becomes width
         image(sillyCatGif, 0, 0, height, width);
