@@ -51,7 +51,7 @@ function draw()
         {
             // Below threshold - pause the GIF
             sillyCatGif.pause();
-            playbackSpeed = 0.001;
+            playbackSpeed = 0.001; 
         } 
         else 
         {
