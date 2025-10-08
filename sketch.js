@@ -52,6 +52,7 @@ function draw()
             // Below threshold - pause the GIF
             sillyCatGif.pause();
             playbackSpeed = 0.001; 
+            // modify testin about 4:42PM
         } 
         else 
         {
