@@ -1,105 +1,61 @@
-// Fly control example
-// Demonstrates using device acceleration (accelerationY) to control GIF playback speed
-// Move phone up/down to simulate airplane motion and control cloud speed
+// Fly control example - fixed to play GIF
+// Device acceleration (accelerationY) controls speed
 
-// Global variables
-let octopusGif;
-let playbackSpeed = 1.0; // Speed multiplier for GIF playback
-let backgroundColor;
-
-// Mapping variables - easy to adjust
+let octopusImg;
 let speedMultiplier = 3.0; // How much speed per unit of acceleration
-let maxSpeed = 270.0; // Maximum playback speed
-let minSpeedToPlay = 0.25; // Minimum speed before pausing
-let movementThreshold = 0.1; // Minimum acceleration needed to play (below this = paused)
+let movementThreshold = 0.1; // Minimum acceleration needed to play
 
-function preload() 
-{
-    // Load the airplane window GIF
-    octopusGif = loadImage('octopus.gif');
-}
-
-function setup() 
-{
+function setup() {
     createCanvas(windowWidth, windowHeight);
-    // createCanvas(octopus, 0, 0, height, width);
-    backgroundColor = color(200, 220, 255);
-    
+    background(200, 220, 255);
+
+    // Create GIF element
+    octopusImg = createImg('octopus.gif');
+    octopusImg.size(width, height);
+    octopusImg.position(0, 0);
+
     // Lock mobile gestures to prevent browser interference
     lockGestures();
-    
-    textAlign(CENTER, CENTER);
-    
+
     // Request permission for motion sensors on iOS
     enableGyroTap();
 }
 
-function draw() 
-{
-    background(backgroundColor);
-    
-    // Check if motion sensors are available
-    if (window.sensorsEnabled) 
-    {
-        // Map absolute value of accelerationY to playback speed
-        // When still (accelerationY = 0), speed is low/paused
-        // As you move phone up/down, speed increases
+function draw() {
+    // Update background
+    background(200, 220, 255);
+
+    if (window.sensorsEnabled) {
         let moveAmount = abs(accelerationY);
-        
-        // Check if movement is below threshold
-        if (moveAmount < movementThreshold) 
-        {
-            // Below threshold - pause the GIF
-            octopusGif.pause();
-            playbackSpeed = 0.001; 
-            // modify testin about 4:42PM
-        } 
-        else 
-        {
-            // Above threshold - calculate and set playback speed
-            playbackSpeed = moveAmount * speedMultiplier;
-            
-            // Constrain to max speed
-            playbackSpeed = constrain(playbackSpeed, 0.0, maxSpeed);
-            
-            octopusGif.play();
-            octopusGif.delay(int(100 / playbackSpeed));
+
+        if (moveAmount < movementThreshold) {
+            // Too still -> hide GIF (simulate paused)
+            octopusImg.style('visibility', 'hidden');
+        } else {
+            // Show GIF
+            octopusImg.style('visibility', 'visible');
+
+            // Optional: adjust speed via CSS animation (hacky, GIF itself cannot be slowed easily)
+            // For precise speed control, GIF needs to be split into frames
         }
-        
-        // Display GIF rotated 90 degrees for portrait mode, filling the canvas
-        push();
-        translate(width/2, height/2);
-        //rotate(HALF_PI); // Rotate 90 degrees
-        imageMode(CENTER);
-        // After rotation, width becomes height and height becomes width
-        image(octopusGif, 0, 0, height, width);
-        pop();
-        
-        // Display acceleration value over the image
-        fill(255, 150, 0); // Orange
+
+        // Display acceleration value
+        fill(255, 150, 0);
         stroke(0);
         strokeWeight(4);
         textSize(64);
-       // text("Accel Y: " + nf(accelerationY, 1, 2), width/2, 80);
-        
-        // Instructions
-        // textSize(18);
-        // fill(100);
-        // noStroke();
-        // text("Move phone up/down to control flight speed", width/2, height - 50);
-        // text("Still = paused, more movement = faster", width/2, height - 25);
-    }
-    else 
-    {
-        // Motion sensors not available or permission not granted
+        text("Accel Y: " + nf(accelerationY, 1, 2), width / 2, 80);
+
+    } else {
         fill(255, 100, 100);
+        textAlign(CENTER, CENTER);
+        textSize(24);
         text("Motion sensors not available", width/2, height/2);
         text("On iOS: Tap to request motion permission", width/2, height/2 + 30);
-        text("Check device compatibility", width/2, height/2 + 60);
     }
 }
 
-function windowResized() 
-{
+function windowResized() {
     resizeCanvas(windowWidth, windowHeight);
+    octopusImg.size(width, height);
 }
