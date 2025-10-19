@@ -3,7 +3,7 @@
 // Move phone up/down to simulate airplane motion and control cloud speed
 
 // Global variables
-let sillyCatGif;
+let octopusGif;
 let playbackSpeed = 1.0; // Speed multiplier for GIF playback
 let backgroundColor;
 
@@ -16,13 +16,13 @@ let movementThreshold = 0.1; // Minimum acceleration needed to play (below this 
 function preload() 
 {
     // Load the airplane window GIF
-    sillyCatGif = loadImage('sillyCat.gif');
+    octopusGif = loadImage('octopus.gif');
 }
 
 function setup() 
 {
     createCanvas(windowWidth, windowHeight);
-    // createCanvas(sillyCatGif, 0, 0, height, width);
+    // createCanvas(octopus, 0, 0, height, width);
     backgroundColor = color(200, 220, 255);
     
     // Lock mobile gestures to prevent browser interference
@@ -50,7 +50,7 @@ function draw()
         if (moveAmount < movementThreshold) 
         {
             // Below threshold - pause the GIF
-            sillyCatGif.pause();
+            octopusGif.pause();
             playbackSpeed = 0.001; 
             // modify testin about 4:42PM
         } 
@@ -62,8 +62,8 @@ function draw()
             // Constrain to max speed
             playbackSpeed = constrain(playbackSpeed, 0.0, maxSpeed);
             
-            sillyCatGif.play();
-            sillyCatGif.delay(int(100 / playbackSpeed));
+            octopusGif.play();
+            octopusGif.delay(int(100 / playbackSpeed));
         }
         
         // Display GIF rotated 90 degrees for portrait mode, filling the canvas
@@ -72,7 +72,7 @@ function draw()
         //rotate(HALF_PI); // Rotate 90 degrees
         imageMode(CENTER);
         // After rotation, width becomes height and height becomes width
-        image(sillyCatGif, 0, 0, height, width);
+        image(octopusGif, 0, 0, height, width);
         pop();
         
         // Display acceleration value over the image
