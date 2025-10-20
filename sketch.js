@@ -96,6 +96,7 @@ function draw() {
     } else {
         fill(255, 100, 100);
         textAlign(CENTER, CENTER);
+        // something
         textSize(24);
         text("Motion sensors not available", width / 2, height / 2);
         text("Tap to enable on iOS", width / 2, height / 2 + 30);
