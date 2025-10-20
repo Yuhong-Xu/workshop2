@@ -1,20 +1,16 @@
-// Octopus GIF - "Sadness Always Follows" final version with zoom subtitle
+// Octopus GIF - "Sadness Always Follows" final version
 let octopusImg;
 let posX, posY;
 let velX = 0, velY = 0;
-let damping = 0.98;
-let sensitivity = 1.0;
-let pullBack = 0.02;
+let damping = 0.98;       // Inertia for drifting
+let sensitivity = 1.0;    // Tilt effect stronger for free movement
+let pullBack = 0.02;      // Slow return to center
 
+// Shake detection
 let shakeCount = 0;
 let lastShakeTime = 0;
-let shakeThreshold = 5;
-let shakeCooldown = 500;
-
-// Zooming subtitle
-let showZoomText = false;
-let zoomTextSize = 10;       // initial very small
-let zoomMaxSize = 150;       // maximum text size
+let shakeThreshold = 5;    // Acceleration threshold for shake
+let shakeCooldown = 500;   // 0.5s cooldown
 
 function setup() {
     createCanvas(windowWidth, windowHeight);
@@ -26,6 +22,7 @@ function setup() {
     posY = height / 2;
     octopusImg.position(posX - octopusImg.width / 2, posY - octopusImg.height / 2);
 
+    // Fullscreen canvas without white border
     document.body.style.margin = '0';
     document.body.style.padding = '0';
     document.body.style.overflow = 'hidden';
@@ -35,6 +32,7 @@ function setup() {
 }
 
 function draw() {
+    // Black background for atmosphere
     background(0, 0, 20);
 
     // Top subtitle
@@ -47,29 +45,34 @@ function draw() {
     if (window.sensorsEnabled) {
         // Tilt controls velocity
         velX += accelerationX * sensitivity;
-        velY += accelerationY * sensitivity;
+        velY += accelerationY * sensitivity; // direction adjusted for natural feel
 
+        // Apply inertia
         velX *= damping;
         velY *= damping;
 
+        // Slow pull back to center
         let centerX = width / 2;
         let centerY = height / 2;
         velX += (centerX - posX) * pullBack;
         velY += (centerY - posY) * pullBack;
 
+        // Update position
         posX += velX;
         posY += velY;
 
+        // Boundary collision + slight jitter
         if (posX < 0 || posX > width) velX *= -0.6;
         if (posY < 0 || posY > height) velY *= -0.6;
         posX = constrain(posX, 0, width);
         posY = constrain(posY, 0, height);
 
-        // Slight jitter when tilt is strong
+        // Slight jitter when tilt is strong (symbolizes struggle)
         if (abs(accelerationX) > shakeThreshold || abs(accelerationY) > shakeThreshold) {
             posX += random(-2, 2);
             posY += random(-2, 2);
 
+            // Count shakes
             let now = millis();
             if (now - lastShakeTime > shakeCooldown) {
                 shakeCount++;
@@ -77,21 +80,16 @@ function draw() {
             }
         }
 
+        // Update octopus position
         octopusImg.position(posX - octopusImg.width / 2, posY - octopusImg.height / 2);
 
-        // Zooming subtitle after 7 shakes
-        if (shakeCount >= 7) {
-            showZoomText = true;
-        }
-
-        if (showZoomText) {
+        // Display center subtitle after 5 shakes
+        if (shakeCount >= 5) {
             fill(255, 50, 50);
             stroke(0);
             strokeWeight(2);
-            textAlign(CENTER, CENTER);
-            // gradually increase text size
-            zoomTextSize = min(zoomTextSize + 1.5, zoomMaxSize);
-            textSize(zoomTextSize);
+            textSize(28);
+            textAlign(CENTER);
             text("Accept the sadness passing through you!", width / 2, height / 2);
         }
 
