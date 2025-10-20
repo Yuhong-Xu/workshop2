@@ -1,11 +1,9 @@
-// Octopus with motion-based floating effect
-// Move your phone to make the octopus sway!
-
+// Octopus GIF controlled by phone tilt (accelerationX/Y)
 let octopusImg;
-let posX, posY;        // Octopus position
+let posX, posY;       // Current position of the octopus
 let velX = 0, velY = 0; // Velocity
-let damping = 0.95;     // Friction / resistance
-let sensitivity = 0.4;  // How much motion affects the octopus
+let damping = 0.95;    // Friction to simulate inertia
+let sensitivity = 0.5; // How strongly tilt affects movement
 
 function setup() {
     createCanvas(windowWidth, windowHeight);
@@ -14,16 +12,14 @@ function setup() {
     // Create GIF element
     octopusImg = createImg('octopus.gif');
     octopusImg.size(300, 300);
-    octopusImg.position(width / 2 - 150, height / 2 - 150);
-
-    // Initial position
     posX = width / 2;
     posY = height / 2;
+    octopusImg.position(posX - octopusImg.width / 2, posY - octopusImg.height / 2);
 
-    // Lock gestures to avoid browser scrolling
+    // Lock gestures to prevent scrolling
     lockGestures();
 
-    // Enable iOS motion permission
+    // Enable motion permissions on iOS
     enableGyroTap();
 }
 
@@ -31,11 +27,13 @@ function draw() {
     background(200, 220, 255);
 
     if (window.sensorsEnabled) {
-        // Apply acceleration to velocity (inverted Y for natural feel)
+        // Update velocity based on phone tilt
+        // X axis: left/right tilt
+        // Y axis: forward/back tilt (invert for natural feel)
         velX += accelerationX * sensitivity;
         velY -= accelerationY * sensitivity;
 
-        // Apply damping to simulate friction
+        // Apply damping to simulate friction / inertia
         velX *= damping;
         velY *= damping;
 
@@ -43,24 +41,22 @@ function draw() {
         posX += velX;
         posY += velY;
 
-        // Boundary limits (soft bounce)
+        // Keep the octopus within canvas bounds
         if (posX < 0 || posX > width) velX *= -0.6;
         if (posY < 0 || posY > height) velY *= -0.6;
-
-        // Clamp position
         posX = constrain(posX, 0, width);
         posY = constrain(posY, 0, height);
 
-        // Move the octopus image
+        // Move the octopus GIF
         octopusImg.position(posX - octopusImg.width / 2, posY - octopusImg.height / 2);
 
-        // Display status
+        // Optional: display tilt values
         fill(255, 150, 0);
         stroke(0);
         strokeWeight(3);
         textSize(32);
         textAlign(CENTER);
-        text("Move your phone!", width / 2, 50);
+        text("Tilt your phone to move the octopus!", width / 2, 50);
 
     } else {
         fill(255, 100, 100);
