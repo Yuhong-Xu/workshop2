@@ -7,7 +7,7 @@ let sensitivity = 0.5; // How strongly tilt affects movement
 
 function setup() {
     createCanvas(windowWidth, windowHeight);
-    background(0);
+    background(0); 
 
     // Create GIF element
     octopusImg = createImg('octopus.gif');
