@@ -1,4 +1,4 @@
-// Octopus GIF - "Sadness Always Follows" with Intro Page & Breathing Text
+// Octopus GIF - "Sadness Always Follows" with Intro Page and Creepster font
 let octopusImg;
 let posX, posY;
 let velX = 0, velY = 0;
@@ -22,11 +22,6 @@ let creepsterFont;
 
 // Intro page flag
 let introActive = true;
-
-// Breathing animation variables
-let breathTimer = 0;
-let breathSpeed = 0.05; // speed of breathing
-let breathAmplitude = 5; // how much the text size changes
 
 function preload() {
     creepsterFont = loadFont('fonts/Creepster-Regular.ttf');
@@ -53,19 +48,16 @@ function setup() {
 }
 
 function draw() {
-    background(0);
+    background(0); // black background for both intro and main
 
     if (introActive) {
-        // Breathing animation for intro text
-        breathTimer += breathSpeed;
-        let breathOffset = sin(breathTimer) * breathAmplitude;
-
-        fill(255, 150, 0);
+        // Initial page text
+        fill(255, 150, 0); // orange
         noStroke();
         textAlign(CENTER, CENTER);
-        textSize(36 + breathOffset); // add breathing effect
+        textSize(36);
         text("Shake the Sadness Octopus hard to try to shake it off!", width / 2, height / 2);
-        return; // skip main loop until user shakes
+        return; // skip rest until user shakes
     }
 
     // Top subtitle
@@ -75,6 +67,7 @@ function draw() {
     textSize(24);
     text("Shake me!", width / 2, 30);
 
+    // Tilt-based interaction
     if (window.sensorsEnabled) {
         velX += accelerationX * sensitivity;
         velY += accelerationY * sensitivity;
