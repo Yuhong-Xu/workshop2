@@ -1,61 +1,60 @@
-// Fly control example - fixed to play GIF
-// Device acceleration (accelerationY) controls speed
-
+// Finger-tracking GIF example
 let octopusImg;
-let speedMultiplier = 3.0; // How much speed per unit of acceleration
-let movementThreshold = 0.1; // Minimum acceleration needed to play
+let prevX = 0;
+let prevY = 0;
+let speed = 0;
+let speedThreshold = 2.0; // Minimum movement speed to show GIF
 
 function setup() {
     createCanvas(windowWidth, windowHeight);
-    background(200, 220, 255);
+    background(0);
 
-    // Create GIF element
+    // Load GIF element
     octopusImg = createImg('octopus.gif');
-    octopusImg.size(width, height);
-    octopusImg.position(0, 0);
-
-    // Lock mobile gestures to prevent browser interference
-    lockGestures();
-
-    // Request permission for motion sensors on iOS
-    enableGyroTap();
+    octopusImg.size(200, 200); // 初始大小
+    octopusImg.position(width/2, height/2);
 }
 
 function draw() {
-    // Update background
     background(200, 220, 255);
 
-    if (window.sensorsEnabled) {
-        let moveAmount = abs(accelerationY);
+    let currentX, currentY;
 
-        if (moveAmount < movementThreshold) {
-            // Too still -> hide GIF (simulate paused)
-            octopusImg.style('visibility', 'hidden');
-        } else {
-            // Show GIF
-            octopusImg.style('visibility', 'visible');
-
-            // Optional: adjust speed via CSS animation (hacky, GIF itself cannot be slowed easily)
-            // For precise speed control, GIF needs to be split into frames
-        }
-
-        // Display acceleration value
-        fill(255, 150, 0);
-        stroke(0);
-        strokeWeight(4);
-        textSize(64);
-        text("Accel Y: " + nf(accelerationY, 1, 2), width / 2, 80);
-
+    if (touches.length > 0) {
+        // Use first touch point
+        currentX = touches[0].x;
+        currentY = touches[0].y;
     } else {
-        fill(255, 100, 100);
-        textAlign(CENTER, CENTER);
-        textSize(24);
-        text("Motion sensors not available", width/2, height/2);
-        text("On iOS: Tap to request motion permission", width/2, height/2 + 30);
+        // Fallback to mouse
+        currentX = mouseX;
+        currentY = mouseY;
     }
+
+    // Calculate movement speed
+    speed = dist(currentX, currentY, prevX, prevY);
+
+    if (speed > speedThreshold) {
+        octopusImg.style('visibility', 'visible');
+    } else {
+        octopusImg.style('visibility', 'hidden');
+    }
+
+    // Move GIF to finger/mouse position
+    octopusImg.position(currentX - octopusImg.width/2, currentY - octopusImg.height/2);
+
+    // Display speed
+    fill(255, 150, 0);
+    stroke(0);
+    strokeWeight(4);
+    textSize(32);
+    textAlign(CENTER, CENTER);
+    text("Speed: " + nf(speed, 1, 2), width/2, 50);
+
+    // Update previous position
+    prevX = currentX;
+    prevY = currentY;
 }
 
 function windowResized() {
     resizeCanvas(windowWidth, windowHeight);
-    octopusImg.size(width, height);
 }
