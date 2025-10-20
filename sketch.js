@@ -24,7 +24,7 @@ function setup() {
 }
 
 function draw() {
-    background(200, 220, 255);
+    background(0);
 
     if (window.sensorsEnabled) {
         // Update velocity based on phone tilt
