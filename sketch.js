@@ -1,4 +1,4 @@
-// Octopus GIF - "Sadness Always Follows" with Creepster font
+// Octopus GIF - "Sadness Always Follows" with Intro Page & Breathing Text
 let octopusImg;
 let posX, posY;
 let velX = 0, velY = 0;
@@ -14,14 +14,21 @@ let shakeCooldown = 500;
 
 // Zooming subtitle
 let showZoomText = false;
-let zoomTextSize = 10;       // initial very small
-let zoomMaxSize = 150;       // maximum text size
+let zoomTextSize = 10;       
+let zoomMaxSize = 150;       
 
 // Font
 let creepsterFont;
 
+// Intro page flag
+let introActive = true;
+
+// Breathing animation variables
+let breathTimer = 0;
+let breathSpeed = 0.05; // speed of breathing
+let breathAmplitude = 5; // how much the text size changes
+
 function preload() {
-    // Load Creepster font
     creepsterFont = loadFont('fonts/Creepster-Regular.ttf');
 }
 
@@ -42,12 +49,24 @@ function setup() {
     lockGestures();
     enableGyroTap();
 
-    // Set font for all text
     textFont(creepsterFont);
 }
 
 function draw() {
-    background(0, 0, 20);
+    background(0);
+
+    if (introActive) {
+        // Breathing animation for intro text
+        breathTimer += breathSpeed;
+        let breathOffset = sin(breathTimer) * breathAmplitude;
+
+        fill(255, 150, 0);
+        noStroke();
+        textAlign(CENTER, CENTER);
+        textSize(36 + breathOffset); // add breathing effect
+        text("Shake the Sadness Octopus hard to try to shake it off!", width / 2, height / 2);
+        return; // skip main loop until user shakes
+    }
 
     // Top subtitle
     fill(255);
@@ -57,7 +76,6 @@ function draw() {
     text("Shake me!", width / 2, 30);
 
     if (window.sensorsEnabled) {
-        // Tilt controls velocity
         velX += accelerationX * sensitivity;
         velY += accelerationY * sensitivity;
 
@@ -77,7 +95,7 @@ function draw() {
         posX = constrain(posX, 0, width);
         posY = constrain(posY, 0, height);
 
-        // Slight jitter when tilt is strong
+        // Slight jitter and shake detection
         if (abs(accelerationX) > shakeThreshold || abs(accelerationY) > shakeThreshold) {
             posX += random(-2, 2);
             posY += random(-2, 2);
@@ -86,6 +104,11 @@ function draw() {
             if (now - lastShakeTime > shakeCooldown) {
                 shakeCount++;
                 lastShakeTime = now;
+
+                // End intro on first shake
+                if (introActive) {
+                    introActive = false;
+                }
             }
         }
 
@@ -101,7 +124,6 @@ function draw() {
             stroke(0);
             strokeWeight(2);
             textAlign(CENTER, CENTER);
-            // Gradually increase text size
             zoomTextSize = min(zoomTextSize + 1.5, zoomMaxSize);
             textSize(zoomTextSize);
             text("Accept the sadness passing through you!", width / 2, height / 2);
