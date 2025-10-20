@@ -1,4 +1,4 @@
-// Octopus GIF - "Sadness Always Follows" with Creepster font
+// Octopus GIF - "Sadness Always Follows" final version with zoom subtitle
 let octopusImg;
 let posX, posY;
 let velX = 0, velY = 0;
@@ -6,7 +6,6 @@ let damping = 0.98;
 let sensitivity = 1.0;
 let pullBack = 0.02;
 
-// Shake detection
 let shakeCount = 0;
 let lastShakeTime = 0;
 let shakeThreshold = 5;
@@ -16,14 +15,6 @@ let shakeCooldown = 500;
 let showZoomText = false;
 let zoomTextSize = 10;       // initial very small
 let zoomMaxSize = 150;       // maximum text size
-
-// Font
-let creepsterFont;
-
-function preload() {
-    // Load Creepster font
-    creepsterFont = loadFont('fonts/Creepster-Regular.ttf');
-}
 
 function setup() {
     createCanvas(windowWidth, windowHeight);
@@ -41,9 +32,6 @@ function setup() {
 
     lockGestures();
     enableGyroTap();
-
-    // Set font for all text
-    textFont(creepsterFont);
 }
 
 function draw() {
@@ -101,7 +89,7 @@ function draw() {
             stroke(0);
             strokeWeight(2);
             textAlign(CENTER, CENTER);
-            // Gradually increase text size
+            // gradually increase text size
             zoomTextSize = min(zoomTextSize + 1.5, zoomMaxSize);
             textSize(zoomTextSize);
             text("Accept the sadness passing through you!", width / 2, height / 2);
