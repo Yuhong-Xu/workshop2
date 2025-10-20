@@ -1,62 +1,77 @@
-// Octopus GIF controlled by phone tilt (accelerationX/Y)
+// Octopus GIF - "Sadness Always Follows" version
 let octopusImg;
-let posX, posY;       // Current position of the octopus
-let velX = 0, velY = 0; // Velocity
-let damping = 0.95;    // Friction to simulate inertia
-let sensitivity = 0.5; // How strongly tilt affects movement
+let posX, posY;       
+let velX = 0, velY = 0; 
+let damping = 0.98;       // Inertia for slow drifting
+let sensitivity = 0.3;    // Tilt effect is small, representing "unshakable weight"
 
 function setup() {
     createCanvas(windowWidth, windowHeight);
-    background(0); 
+    background(0);
 
-    // Create GIF element
+    // Create GIF
     octopusImg = createImg('octopus.gif');
     octopusImg.size(300, 300);
     posX = width / 2;
     posY = height / 2;
     octopusImg.position(posX - octopusImg.width / 2, posY - octopusImg.height / 2);
 
-    // Lock gestures to prevent scrolling
-    lockGestures();
+    // Fullscreen canvas without white border
+    document.body.style.margin = '0';
+    document.body.style.padding = '0';
+    document.body.style.overflow = 'hidden';
 
-    // Enable motion permissions on iOS
+    // Mobile gestures / sensor permission
+    lockGestures();
     enableGyroTap();
 }
 
 function draw() {
-    background(0);
+    // Black background for deep night solitude feeling
+    background(0, 0, 20);
 
     if (window.sensorsEnabled) {
-        // Update velocity based on phone tilt
-        // X axis: left/right tilt
-        // Y axis: forward/back tilt (invert for natural feel)
+        // Tilt controls velocity
         velX += accelerationX * sensitivity;
         velY -= accelerationY * sensitivity;
 
-        // Apply damping to simulate friction / inertia
+        // Inertia drifting
         velX *= damping;
         velY *= damping;
+
+        // Octopus slowly returns to center (symbolizing sadness that can't be shaken off)
+        let centerX = width / 2;
+        let centerY = height / 2;
+        let pullBack = 0.05; // Pull-back strength
+        velX += (centerX - posX) * pullBack;
+        velY += (centerY - posY) * pullBack;
 
         // Update position
         posX += velX;
         posY += velY;
 
-        // Keep the octopus within canvas bounds
+        // Boundary collision + slight shake (symbolizing struggle)
         if (posX < 0 || posX > width) velX *= -0.6;
         if (posY < 0 || posY > height) velY *= -0.6;
         posX = constrain(posX, 0, width);
         posY = constrain(posY, 0, height);
 
-        // Move the octopus GIF
+        // Slight jitter when tilt is strong
+        if (abs(accelerationX) > 5 || abs(accelerationY) > 5) {
+            posX += random(-2, 2);
+            posY += random(-2, 2);
+        }
+
+        // Update octopus position
         octopusImg.position(posX - octopusImg.width / 2, posY - octopusImg.height / 2);
 
-        // Optional: display tilt values
-        fill(255, 150, 0);
+        // Display message
+        fill(255, 50, 50);
         stroke(0);
-        strokeWeight(3);
-        textSize(32);
+        strokeWeight(2);
+        textSize(28);
         textAlign(CENTER);
-        text("Tilt your phone to move the octopus!", width / 2, 50);
+        text("Sadness always follows, can't shake it off...", width / 2, 50);
 
     } else {
         fill(255, 100, 100);
