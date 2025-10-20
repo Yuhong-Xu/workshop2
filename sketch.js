@@ -1,4 +1,4 @@
-// Octopus GIF - "Sadness Always Follows" with Intro Page and Creepster font
+// Octopus GIF - "Sadness Always Follows" with Creepster font
 let octopusImg;
 let posX, posY;
 let velX = 0, velY = 0;
@@ -14,16 +14,14 @@ let shakeCooldown = 500;
 
 // Zooming subtitle
 let showZoomText = false;
-let zoomTextSize = 10;       
-let zoomMaxSize = 150;       
+let zoomTextSize = 10;       // initial very small
+let zoomMaxSize = 150;       // maximum text size
 
 // Font
 let creepsterFont;
 
-// Intro page flag
-let introActive = true;
-
 function preload() {
+    // Load Creepster font
     creepsterFont = loadFont('fonts/Creepster-Regular.ttf');
 }
 
@@ -44,21 +42,12 @@ function setup() {
     lockGestures();
     enableGyroTap();
 
+    // Set font for all text
     textFont(creepsterFont);
 }
 
 function draw() {
-    background(0); // black background for both intro and main
-
-    if (introActive) {
-        // Initial page text
-        fill(255, 150, 0); // orange
-        noStroke();
-        textAlign(CENTER, CENTER);
-        textSize(36);
-        text("Shake the Sadness Octopus hard to try to shake it off!", width / 2, height / 2);
-        return; // skip rest until user shakes
-    }
+    background(0, 0, 20);
 
     // Top subtitle
     fill(255);
@@ -67,8 +56,8 @@ function draw() {
     textSize(24);
     text("Shake me!", width / 2, 30);
 
-    // Tilt-based interaction
     if (window.sensorsEnabled) {
+        // Tilt controls velocity
         velX += accelerationX * sensitivity;
         velY += accelerationY * sensitivity;
 
@@ -88,7 +77,7 @@ function draw() {
         posX = constrain(posX, 0, width);
         posY = constrain(posY, 0, height);
 
-        // Slight jitter and shake detection
+        // Slight jitter when tilt is strong
         if (abs(accelerationX) > shakeThreshold || abs(accelerationY) > shakeThreshold) {
             posX += random(-2, 2);
             posY += random(-2, 2);
@@ -97,11 +86,6 @@ function draw() {
             if (now - lastShakeTime > shakeCooldown) {
                 shakeCount++;
                 lastShakeTime = now;
-
-                // End intro on first shake
-                if (introActive) {
-                    introActive = false;
-                }
             }
         }
 
@@ -117,6 +101,7 @@ function draw() {
             stroke(0);
             strokeWeight(2);
             textAlign(CENTER, CENTER);
+            // Gradually increase text size
             zoomTextSize = min(zoomTextSize + 1.5, zoomMaxSize);
             textSize(zoomTextSize);
             text("Accept the sadness passing through you!", width / 2, height / 2);
