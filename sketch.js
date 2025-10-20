@@ -1,60 +1,77 @@
-// Finger-tracking GIF example
+// Octopus with motion-based floating effect
+// Move your phone to make the octopus sway!
+
 let octopusImg;
-let prevX = 0;
-let prevY = 0;
-let speed = 0;
-let speedThreshold = 2.0; // Minimum movement speed to show GIF
+let posX, posY;        // Octopus position
+let velX = 0, velY = 0; // Velocity
+let damping = 0.95;     // Friction / resistance
+let sensitivity = 0.4;  // How much motion affects the octopus
 
 function setup() {
     createCanvas(windowWidth, windowHeight);
     background(0);
 
-    // Load GIF element
+    // Create GIF element
     octopusImg = createImg('octopus.gif');
-    octopusImg.size(200, 200); // 初始大小
-    octopusImg.position(width/2, height/2);
+    octopusImg.size(300, 300);
+    octopusImg.position(width / 2 - 150, height / 2 - 150);
+
+    // Initial position
+    posX = width / 2;
+    posY = height / 2;
+
+    // Lock gestures to avoid browser scrolling
+    lockGestures();
+
+    // Enable iOS motion permission
+    enableGyroTap();
 }
 
 function draw() {
     background(200, 220, 255);
 
-    let currentX, currentY;
+    if (window.sensorsEnabled) {
+        // Apply acceleration to velocity (inverted Y for natural feel)
+        velX += accelerationX * sensitivity;
+        velY -= accelerationY * sensitivity;
 
-    if (touches.length > 0) {
-        // Use first touch point
-        currentX = touches[0].x;
-        currentY = touches[0].y;
+        // Apply damping to simulate friction
+        velX *= damping;
+        velY *= damping;
+
+        // Update position
+        posX += velX;
+        posY += velY;
+
+        // Boundary limits (soft bounce)
+        if (posX < 0 || posX > width) velX *= -0.6;
+        if (posY < 0 || posY > height) velY *= -0.6;
+
+        // Clamp position
+        posX = constrain(posX, 0, width);
+        posY = constrain(posY, 0, height);
+
+        // Move the octopus image
+        octopusImg.position(posX - octopusImg.width / 2, posY - octopusImg.height / 2);
+
+        // Display status
+        fill(255, 150, 0);
+        stroke(0);
+        strokeWeight(3);
+        textSize(32);
+        textAlign(CENTER);
+        text("Move your phone!", width / 2, 50);
+
     } else {
-        // Fallback to mouse
-        currentX = mouseX;
-        currentY = mouseY;
+        fill(255, 100, 100);
+        textAlign(CENTER, CENTER);
+        textSize(24);
+        text("Motion sensors not available", width / 2, height / 2);
+        text("Tap to enable on iOS", width / 2, height / 2 + 30);
     }
-
-    // Calculate movement speed
-    speed = dist(currentX, currentY, prevX, prevY);
-
-    if (speed > speedThreshold) {
-        octopusImg.style('visibility', 'visible');
-    } else {
-        octopusImg.style('visibility', 'hidden');
-    }
-
-    // Move GIF to finger/mouse position
-    octopusImg.position(currentX - octopusImg.width/2, currentY - octopusImg.height/2);
-
-    // Display speed
-    fill(255, 150, 0);
-    stroke(0);
-    strokeWeight(4);
-    textSize(32);
-    textAlign(CENTER, CENTER);
-    text("Speed: " + nf(speed, 1, 2), width/2, 50);
-
-    // Update previous position
-    prevX = currentX;
-    prevY = currentY;
 }
 
 function windowResized() {
     resizeCanvas(windowWidth, windowHeight);
+    octopusImg.size(300, 300);
 }
